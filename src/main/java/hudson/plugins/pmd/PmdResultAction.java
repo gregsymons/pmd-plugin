@@ -1,6 +1,13 @@
 package hudson.plugins.pmd;
 
+import java.util.Collection;
+import java.util.Collections;
+
+import jenkins.tasks.SimpleBuildStep;
+
 import hudson.model.AbstractBuild;
+import hudson.model.Action;
+import hudson.model.Run;
 import hudson.plugins.analysis.core.HealthDescriptor;
 import hudson.plugins.analysis.core.PluginDescriptor;
 import hudson.plugins.analysis.core.AbstractResultAction;
@@ -16,18 +23,16 @@ import hudson.plugins.analysis.core.AbstractResultAction;
  *
  * @author Ulli Hafner
  */
-public class PmdResultAction extends AbstractResultAction<PmdResult> {
+public class PmdResultAction extends AbstractResultAction<PmdResult> implements SimpleBuildStep.LastBuildAction {
     /**
      * Creates a new instance of <code>PmdResultAction</code>.
-     *
-     * @param owner
+     *  @param owner
      *            the associated build of this action
      * @param healthDescriptor
      *            health descriptor to use
      * @param result
-     *            the result in this build
      */
-    public PmdResultAction(final AbstractBuild<?, ?> owner, final HealthDescriptor healthDescriptor, final PmdResult result) {
+    public PmdResultAction(final Run<?, ?> owner, final HealthDescriptor healthDescriptor, final PmdResult result) {
         super(owner, new PmdHealthDescriptor(healthDescriptor), result);
     }
 
@@ -39,5 +44,10 @@ public class PmdResultAction extends AbstractResultAction<PmdResult> {
     @Override
     protected PluginDescriptor getDescriptor() {
         return new PmdDescriptor();
+    }
+
+    @Override
+    public Collection<? extends Action> getProjectActions() {
+        return Collections.singleton(new PmdProjectAction(getOwner().getParent(), PmdResultAction.class));
     }
 }

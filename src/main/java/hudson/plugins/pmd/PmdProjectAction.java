@@ -1,6 +1,7 @@
 package hudson.plugins.pmd;
 
 import hudson.model.AbstractProject;
+import hudson.model.Job;
 import hudson.plugins.analysis.core.ResultAction;
 import hudson.plugins.analysis.core.AbstractProjectAction;
 
@@ -23,13 +24,11 @@ public class PmdProjectAction extends AbstractProjectAction<ResultAction<PmdResu
 
     /**
      * Instantiates a new {@link PmdProjectAction}.
-     *
-     * @param project
+     *  @param project
      *            the project that owns this action
      * @param type
-     *            the result action type
      */
-    public PmdProjectAction(final AbstractProject<?, ?> project,
+    public PmdProjectAction(final Job<?, ?> project,
             final Class<? extends ResultAction<PmdResult>> type) {
         super(project, type, Messages._PMD_ProjectAction_Name(), Messages._PMD_Trend_Name(),
                 PmdDescriptor.PLUGIN_ID, PmdDescriptor.ICON_URL, PmdDescriptor.RESULT_URL);

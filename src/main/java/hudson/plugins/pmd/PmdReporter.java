@@ -123,7 +123,7 @@ public class PmdReporter extends HealthAwareReporter<PmdResult> {
     @Override
     protected PmdResult createResult(final MavenBuild build, final ParserResult project) {
         return new PmdReporterResult(build, getDefaultEncoding(), project,
-                usePreviousBuildAsStable(), useOnlyStableBuildsAsReference());
+                usePreviousBuildAsReference(), useOnlyStableBuildsAsReference());
     }
 
     @Override

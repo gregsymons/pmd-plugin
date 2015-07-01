@@ -3,6 +3,7 @@ package hudson.plugins.pmd;
 import com.thoughtworks.xstream.XStream;
 
 import hudson.model.AbstractBuild;
+import hudson.model.Run;
 import hudson.plugins.analysis.core.BuildHistory;
 import hudson.plugins.analysis.core.BuildResult;
 import hudson.plugins.analysis.core.ParserResult;
@@ -20,21 +21,19 @@ public class PmdResult extends BuildResult {
 
     /**
      * Creates a new instance of {@link PmdResult}.
-     *
-     * @param build
+     *  @param build
      *            the current build as owner of this action
      * @param defaultEncoding
      *            the default encoding to be used when reading and parsing files
      * @param result
-     *            the parsed result with all annotations
+ *            the parsed result with all annotations
      * @param usePreviousBuildAsReference
-     *            determines whether to use the previous build as the reference
-     *            build
+*            determines whether to use the previous build as the reference
+*            build
      * @param useStableBuildAsReference
-     *            determines whether only stable builds should be used as
-     *            reference builds or not
+*            determines whether only stable builds should be used as
      */
-    public PmdResult(final AbstractBuild<?, ?> build, final String defaultEncoding, final ParserResult result,
+    public PmdResult(final Run<?, ?> build, final String defaultEncoding, final ParserResult result,
             final boolean usePreviousBuildAsReference, final boolean useStableBuildAsReference) {
         this(build, defaultEncoding, result, usePreviousBuildAsReference, useStableBuildAsReference, PmdResultAction.class);
     }
@@ -46,10 +45,10 @@ public class PmdResult extends BuildResult {
      * @param result the parsed result with all annotations
      * @param usePreviousBuildAsReference the value of usePreviousBuildAsReference
      * @param useStableBuildAsReference determines whether only stable builds should be used as
-            reference builds or not
+       reference builds or not
      * @param actionType the type of the result action
      */
-    protected PmdResult(final AbstractBuild<?, ?> build,
+    protected PmdResult(final Run<?, ?> build,
             final String defaultEncoding, final ParserResult result,
             final boolean usePreviousBuildAsReference,
             final boolean useStableBuildAsReference,
@@ -57,7 +56,7 @@ public class PmdResult extends BuildResult {
         this(build, new BuildHistory(build, actionType, usePreviousBuildAsReference, useStableBuildAsReference), result, defaultEncoding, true);
     }
 
-    PmdResult(final AbstractBuild<?, ?> build, final BuildHistory history,
+    PmdResult(final Run<?, ?> build, final BuildHistory history,
             final ParserResult result, final String defaultEncoding, final boolean canSerialize) {
         super(build, history, result, defaultEncoding);
 

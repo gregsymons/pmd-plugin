@@ -4,14 +4,17 @@ import java.io.IOException;
 
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.DataBoundSetter;
 
+import hudson.FilePath;
 import hudson.Launcher;
 import hudson.matrix.MatrixAggregator;
 import hudson.matrix.MatrixBuild;
-import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Action;
 import hudson.model.BuildListener;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.plugins.analysis.core.BuildResult;
 import hudson.plugins.analysis.core.FilesParser;
 import hudson.plugins.analysis.core.HealthAwarePublisher;
@@ -31,8 +34,9 @@ public class PmdPublisher extends HealthAwarePublisher {
 
     /** Default PMD pattern. */
     private static final String DEFAULT_PATTERN = "**/pmd.xml";
+
     /** Ant file-set pattern of files to work with. */
-    private final String pattern;
+    private String pattern = DEFAULT_PATTERN;
 
     /**
      * Creates a new instance of <code>PmdPublisher</code>.
@@ -100,7 +104,6 @@ public class PmdPublisher extends HealthAwarePublisher {
      */
     // CHECKSTYLE:OFF
     @SuppressWarnings("PMD.ExcessiveParameterList")
-    @DataBoundConstructor
     public PmdPublisher(final String healthy, final String unHealthy, final String thresholdLimit,
             final String defaultEncoding, final boolean useDeltaValues,
             final String unstableTotalAll, final String unstableTotalHigh, final String unstableTotalNormal, final String unstableTotalLow,
@@ -118,7 +121,19 @@ public class PmdPublisher extends HealthAwarePublisher {
                 shouldDetectModules, canComputeNew, false, PLUGIN_NAME);
         this.pattern = pattern;
     }
+
     // CHECKSTYLE:ON
+
+    @DataBoundConstructor
+    public PmdPublisher() {
+        super(PLUGIN_NAME);
+        setCanResolveRelativePaths(false);
+    }
+
+    @DataBoundSetter
+    public void setPattern(final String pattern) {
+        this.pattern = pattern;
+    }
 
     /**
      * Returns the Ant file-set pattern of files to work with.
@@ -135,11 +150,11 @@ public class PmdPublisher extends HealthAwarePublisher {
     }
 
     @Override
-    public BuildResult perform(final AbstractBuild<?, ?> build, final PluginLogger logger) throws InterruptedException, IOException {
+    public BuildResult perform(final Run<?, ?> build, final FilePath workspace, final TaskListener listener, final PluginLogger logger) throws InterruptedException, IOException {
         logger.log("Collecting PMD analysis files...");
         FilesParser pmdCollector = new FilesParser(PLUGIN_NAME, StringUtils.defaultIfEmpty(getPattern(), DEFAULT_PATTERN),
                 new PmdParser(getDefaultEncoding()), shouldDetectModules(), isMavenBuild(build));
-        ParserResult project = build.getWorkspace().act(pmdCollector);
+        ParserResult project = workspace.act(pmdCollector);
         logger.logLines(project.getLogMessages());
 
         PmdResult result = new PmdResult(build, getDefaultEncoding(), project,
